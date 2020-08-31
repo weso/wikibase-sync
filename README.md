@@ -4,7 +4,7 @@
   <td>License</td>
   <td>
     <a href="https://github.com/weso/wikibase-sync/blob/master/LICENSE">
-    <img src="https://img.shields.io/github/license/weso/wikibase-sync.svg" alt="license" />
+    <img src="https://img.shields.io/github/license/weso/wikibase-sync" alt="license" />
     </a>
 </td>
 </tr>
