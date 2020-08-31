@@ -83,4 +83,4 @@ def execute_batch_synchronization(source_content, target_content, synchronizer, 
             print(f"Error synchronizing triple: {res.message}")
 ```
 
-More information about these operations and time gained with them can be explored in the [Benchmarks notebook](notebooks/Benchmark.ipynb).
+More information about these operations and time gained with them can be explored in the [Benchmarks notebook](notebooks/Benchmarks.ipynb).
