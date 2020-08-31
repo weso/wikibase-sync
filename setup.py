@@ -7,7 +7,7 @@ with open(path.join(curr_dir, 'README.md'), encoding='utf-8') as f:
 
 setup(
     name='wbsync',
-    version='0.1.1',
+    version='0.1.2',
     packages=['wbsync', 'wbsync.external', 'wbsync.synchronization',
               'wbsync.triplestore', 'wbsync.util'],
     url='https://github.com/weso/rdf-wb-sync',
