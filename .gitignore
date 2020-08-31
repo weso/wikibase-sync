@@ -30,3 +30,5 @@ bsbmtools-0.2
 dist/
 
 uris.pkl
+
+wbsync.egg-info
