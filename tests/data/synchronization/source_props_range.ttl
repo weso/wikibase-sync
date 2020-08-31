@@ -1,0 +1,27 @@
+#################################################################
+# Example ontology.                                             #
+# This file is used to test the CI and synchronization systems. #
+#################################################################
+
+@prefix ex: <http://www.semanticweb.org/spitxa/ontologies/2020/1/asio-human-resource#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+ex:authors rdf:type owl:ObjectProperty ;
+           rdfs:range ex:Author .
+
+ex:fund rdf:type owl:ObjectProperty .
+
+
+ex:projectEndDate rdf:type owl:DatatypeProperty ;
+                  rdfs:range xsd:date .
+
+ex:projectKeyword rdf:type owl:DatatypeProperty ;
+                  rdfs:range xsd:string .
+
+ex:projectFund rdf:type owl:DatatypeProperty ;
+               rdfs:range xsd:integer .
+
+ex:isbn rdf:type owl:DatatypeProperty .

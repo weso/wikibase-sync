@@ -1,0 +1,21 @@
+
+language: python
+python:
+  - 3.6
+  - 3.7
+dist: xenial
+install:
+  - pip install --progress-bar off -r requirements.txt
+  - pip install --progress-bar off pytest-cov pytest-faulthandler codecov pytest-bdd
+script:
+  # run tests
+  - py.test --cov-report=xml --cov=hercules_sync
+
+  # build documentation
+  - cd docs/sphinx
+  - make html
+  - touch build/html/.nojekyll
+  - cd ../../
+
+after_success:
+  - codecov

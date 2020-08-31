@@ -1,0 +1,30 @@
+instance
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+
+
+.pytest_cache/
+
+.DS_Store
+
+docs/sphinx/build
+
+# Codecov
+.coverage
+coverage.xml
+run_codecov.sh
+
+secret.py
+
+# notebook checkpoints
+.ipynb_checkpoints
+
+# editor
+.vscode
+
+# Berlin sparql benchmarks tool
+bsbmtools-0.2
+
+dist/

@@ -1,0 +1,17 @@
+Metadata-Version: 1.1
+Name: wbsync
+Version: 0.1.1
+Summary: UNKNOWN
+Home-page: https://github.com/weso/rdf-wb-sync
+Author: Alejandro González Hevia
+Author-email: alejandrgh11@gmail.com
+License: MIT
+Description: # rdf-wb-sync
+        Python library to synchronise data between RDF files and Wikibase instances.
+        
+Platform: UNKNOWN
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.6
+Classifier: Programming Language :: Python :: 3.7

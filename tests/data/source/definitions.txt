@@ -1,0 +1,6 @@
+package es.weso.shexl
+
+abstract class Definition(line: Int, column: Int) extends ASTNode(line, column)
+
+case class PrefixDef(line: Int, column: Int, name: String, uri: URL) extends Definition(line, column)
+case class ShapeDef(line: Int, column: Int, name: String, constraints: List[Constraint]) extends Definition(line, column)

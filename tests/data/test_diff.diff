@@ -1,0 +1,60 @@
+diff --git a/ShExL.interp b/ShExL.interp
+new file mode 100644
+index 0000000..a7732aa
+--- /dev/null
++++ b/ShExL.interp
+@@ -0,0 +1,17 @@
++token literal names:
++null
++'PREFIX'
++':'
++'{'
++'}'
++';'
++'@'
++'integer'
++'string'
++'double'
++null
++null
++null
++null
++null
++null
+
+diff --git a/ASTBasicTest.txt b/ASTBasicTest.txt
+index a0ddf65..7576562 100644
+--- a/ASTBasicTest.txt
++++ b/ASTBasicTest.txt
+@@ -1,6 +1,6 @@
+ package es.weso.shexl.ast
+
+-import es.weso.shexl.{Constraint, FieldConstraint, PrefixDef, PrefixInv, ShExL, ShapeDef, ShapeInv, TypeConstraint, URL}
++import es.weso.shexl.ast.{Constraint, FieldConstraint, PrefixDef, PrefixInv, ShExL, ShapeDef, ShapeInv, TypeConstraint, URL}
+
+ class ASTBasicTest {
+
+@@ -12,8 +12,8 @@ class ASTBasicTest {
+         PrefixDef(0,0,"foaf", URL(0,0,"http://scheema.org/foaf/>")),
+         ShapeDef(0,0,"Person",
+           List(
+-            Constraint(0,0,FieldConstraint(0,0,PrefixInv(0,0,"foaf"), "name"), TypeConstraint(0,0,PrefixInv(0,0,"string"))),
+-            Constraint(0,0,FieldConstraint(0,0,PrefixInv(0,0,"xsd"), "knows"), TypeConstraint(0,0,ShapeInv(0,0,"Person")))
++            Constraint(0,0,FieldConstraint(0,0,PrefixInv(0,0,"foaf", "name")), TypeConstraint(0,0,PrefixInv(0,0,"xsd", "string"))),
++            Constraint(0,0,FieldConstraint(0,0,PrefixInv(0,0,"xsd", "knows")), TypeConstraint(0,0,ShapeInv(0,0,"Person")))
+           )
+         )
+       )
+
+diff --git a/definitions.txt b/definitions.txt
+deleted file mode 100644
+index 92c9897..0000000
+--- a/definitions.txt
++++ /dev/null
+@@ -1,6 +0,0 @@
+-package es.weso.shexl
+-
+-abstract class Definition(line: Int, column: Int) extends ASTNode(line, column)
+-
+-case class PrefixDef(line: Int, column: Int, name: String, uri: URL) extends Definition(line, column)
+-case class ShapeDef(line: Int, column: Int, name: String, constraints: List[Constraint]) extends Definition(line, column)
