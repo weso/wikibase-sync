@@ -11,11 +11,5 @@ script:
   # run tests
   - py.test --cov-report=xml --cov=hercules_sync
 
-  # build documentation
-  - cd docs/sphinx
-  - make html
-  - touch build/html/.nojekyll
-  - cd ../../
-
 after_success:
   - codecov
