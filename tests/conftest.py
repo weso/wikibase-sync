@@ -45,4 +45,5 @@ def mocked_adapter(id_generator):
         adapter._local_item_engine = mock.MagicMock(return_value=writer_mock)
         adapter._local_login = mock.MagicMock()
         adapter._mappings_prop = mock.MagicMock()
+        adapter._related_link_prop = mock.MagicMock()
         yield adapter

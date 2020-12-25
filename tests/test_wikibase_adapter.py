@@ -8,17 +8,19 @@ from wikidataintegrator import wdi_core
 
 from wbsync.external.uri_factory_mock import URIFactory
 from wbsync.triplestore import URIElement, LiteralElement, ModificationResult, \
-                                      TripleInfo, WikibaseAdapter, AnonymousElement
+    TripleInfo, WikibaseAdapter, AnonymousElement
 from wbsync.triplestore.wikibase_adapter import DEFAULT_LANG, MAPPINGS_PROP_DESC, \
-                                                       MAPPINGS_PROP_LABEL, is_asio_uri
+    RELATED_LINK_DESC, RELATED_LINK_LABEL, \
+    MAPPINGS_PROP_LABEL, is_asio_uri
 from wbsync.util.uri_constants import ASIO_BASE, GEO_BASE, RDFS_LABEL, RDFS_COMMENT, \
-                                             SKOS_ALTLABEL, SCHEMA_NAME, SCHEMA_DESCRIPTION, \
-                                             SKOS_PREFLABEL
+    SKOS_ALTLABEL, SCHEMA_NAME, SCHEMA_DESCRIPTION, \
+    SKOS_PREFLABEL
 
 
 class FakeRequestsResponse():
     def __init__(self, text):
         self.text = text
+
 
 def mocked_requests_prop_existing(_):
     text = json.dumps({
@@ -32,6 +34,11 @@ def mocked_requests_prop_existing(_):
                 'label': MAPPINGS_PROP_LABEL,
                 'description': MAPPINGS_PROP_DESC,
                 'id': 'P42'
+            },
+            {
+                'label': RELATED_LINK_LABEL,
+                'description': RELATED_LINK_DESC,
+                'id': 'P43'
             }
         ]
     })
@@ -60,27 +67,27 @@ def triples():
 
     return {
         'alias_en': TripleInfo(URIElement(example + 'Person'), URIElement(SKOS_ALTLABEL),
-                              LiteralElement('individual', lang='en')),
+                               LiteralElement('individual', lang='en')),
         'alias_es': TripleInfo(URIElement(example + 'Person'), URIElement(SKOS_ALTLABEL),
-                              LiteralElement('individuo', lang='es')),
+                               LiteralElement('individuo', lang='es')),
         'alias_es_2': TripleInfo(URIElement(example + 'Person'), URIElement(SKOS_ALTLABEL),
-                              LiteralElement('sujeto', lang='es')),
+                                 LiteralElement('sujeto', lang='es')),
         'anonymous_element': TripleInfo(URIElement(example + 'test', etype='property', proptype=f"{ASIO_BASE}property"),
-                              URIElement(example + 'livesIn'), AnonymousElement('cb013')),
+                                        URIElement(example + 'livesIn'), AnonymousElement('cb013')),
         'desc_en': TripleInfo(URIElement(example + 'Person'), URIElement(RDFS_COMMENT),
                               LiteralElement('A person', lang='en')),
         'desc_es': TripleInfo(URIElement(example + 'Person'), URIElement(RDFS_COMMENT),
                               LiteralElement('Una persona', lang='es')),
         'desc_long': TripleInfo(URIElement(example + 'Person'), URIElement(RDFS_COMMENT),
-                              LiteralElement('Una persona' * 500, lang='es')),
+                                LiteralElement('Una persona' * 500, lang='es')),
         'desc_asio': TripleInfo(URIElement(example_asio + 'authors'), URIElement(RDFS_COMMENT),
-                              LiteralElement('Publication authored by a person.', lang='en')),
+                                LiteralElement('Publication authored by a person.', lang='en')),
         'label_en': TripleInfo(URIElement(example + 'labra'), URIElement(RDFS_LABEL),
                                LiteralElement('Jose Emilio Labra Gayo', lang='en')),
         'label_ko': TripleInfo(URIElement(example + 'labra'), URIElement(RDFS_LABEL),
                                LiteralElement('라브라', lang='ko')),
         'label_no_lang': TripleInfo(URIElement(example + 'labra'), URIElement(RDFS_LABEL),
-                               LiteralElement('José Emilio Labra Gayo')),
+                                    LiteralElement('José Emilio Labra Gayo')),
         'label_unknown': TripleInfo(URIElement(example + 'labra'), URIElement(RDFS_LABEL),
                                     LiteralElement('라브', lang='invented')),
         'literal_datatype': TripleInfo(URIElement(example + 'Person'), URIElement(example + 'livesIn'),
@@ -88,7 +95,7 @@ def triples():
         'no_label': TripleInfo(URIElement(example_no_label + 'test'), URIElement(RDFS_LABEL),
                                LiteralElement('a test', lang='en')),
         'no_hashtag': TripleInfo(URIElement(example_no_hashtag + 'test'), URIElement(RDFS_LABEL),
-                               LiteralElement('1234', lang='en')),
+                                 LiteralElement('1234', lang='en')),
         'proptype': TripleInfo(URIElement(example + 'test', etype='property', proptype=f"{ASIO_BASE}property"),
                                URIElement(RDFS_LABEL), LiteralElement('test')),
         'wditemid': TripleInfo(URIElement(example + 'Person'), URIElement(example + 'livesIn'),
@@ -235,6 +242,12 @@ def test_get_or_create_mappings_existing(mock_get, mocked_adapter, triples):
     assert mocked_adapter._get_or_create_mappings_prop() == 'P42'
 
 
+@mock.patch('requests.get', side_effect=mocked_requests_prop_existing)
+def test_get_or_create_mappings_existing(mock_get, mocked_adapter, triples):
+    mocked_adapter.api_url = 'www.example.org'
+    assert mocked_adapter._get_or_create_related_link_prop() == 'P43'
+
+
 @mock.patch('requests.get', side_effect=mocked_requests_prop_non_existing)
 def test_get_or_create_mappings_non_existing(mock_get, mocked_adapter, triples):
     mocked_adapter.api_url = 'www.example.org'
@@ -262,28 +275,6 @@ def test_is_asio_uri(triples):
     assert not is_asio_uri(triples['desc_en'].subject)
 
 
-def test_label_cant_be_inferred(mocked_adapter, triples):
-    # to avoid problems with the subject uri
-    mocked_adapter._add_mappings_to_entity = mock.MagicMock()
-    triple = triples['no_label']
-    mocked_adapter.create_triple(triple)
-    item_engine_calls = [
-        # create subject
-        mock.call(new_item=True),
-        # create label for item Q1
-        mock.call('Q1')
-    ]
-    mocked_adapter._local_item_engine.assert_has_calls(item_engine_calls, any_order=False)
-
-    writer = mocked_adapter._local_item_engine(None)
-    set_label_calls = [
-        # label created with rdfs:label predicate
-        mock.call('a test', 'en')
-    ]
-    writer.set_label.assert_has_calls(set_label_calls, any_order=False)
-    assert writer.set_label.call_count == 1
-
-
 def test_label_no_lang_uses_default_lang(mocked_adapter, triples):
     triple = triples['label_no_lang']
     mocked_adapter.create_triple(triple)
@@ -295,7 +286,7 @@ def test_label_no_lang_uses_default_lang(mocked_adapter, triples):
         mock.call('José Emilio Labra Gayo', DEFAULT_LANG)
     ]
     writer.set_label.assert_has_calls(set_label_calls, any_order=False)
-    assert writer.set_label.call_count == 2
+    assert writer.set_label.call_count == 2  # labra + related link
 
 
 def test_label_with_no_hashtag_is_inferred(mocked_adapter, triples):
@@ -340,21 +331,21 @@ def test_literal_datatype(mocked_adapter, triples):
     update_call = mock.call(data=[triple.object.to_wdi_datatype(prop_nr=triple.predicate.id)],
                             append_value=[triple.predicate.id])
     assert update_call in writer.update.mock_calls
-    assert writer.update.call_count == 3  # 2 mappings + delete statement
+    assert writer.update.call_count == 5  # 2 mappings + delete statement + related link
 
 
 def test_mappings_are_created_without_asio(mocked_adapter, triples):
     triple = triples['desc_en']
     _ = mocked_adapter.create_triple(triple)
     writer = mocked_adapter._local_item_engine(None)
-    assert writer.update.call_count == 1
+    assert writer.update.call_count == 2
 
 
 def test_mappings_are_not_created_with_asio(mocked_adapter, triples):
     triple = triples['desc_asio']
     _ = mocked_adapter.create_triple(triple)
     writer = mocked_adapter._local_item_engine(None)
-    assert writer.update.call_count == 0
+    assert writer.update.call_count == 1
 
 
 def test_modification_result_is_returned(mocked_adapter, triples):
@@ -391,12 +382,12 @@ def test_remove_triple(mocked_adapter, triples):
         mock.call(new_item=True),
     ]
     mocked_adapter._local_item_engine.assert_has_calls(item_engine_calls, any_order=False)
-    assert mocked_adapter._local_item_engine.call_count == 4
+    assert mocked_adapter._local_item_engine.call_count == 4  # 4 + related link
 
     writer = mocked_adapter._local_item_engine(None)
     update_call = mock.call(data=[wdi_core.WDBaseDataType.delete_statement('P3')])
     assert update_call in writer.update.mock_calls
-    assert writer.update.call_count == 4  # 3 mappings + delete statement
+    assert writer.update.call_count == 7  # 3 mappings + delete statement
 
 
 def test_remove_alias(mocked_adapter, triples):
@@ -509,7 +500,7 @@ def test_set_alias(mocked_adapter, triples):
     mocked_adapter.create_triple(alias_en)
     mocked_adapter.create_triple(alias_es)
     item_engine_calls = [
-        # create subject
+        #  create subject
         mock.call(new_item=True),
         # set alias for item Q1
         mock.call('Q1'),
@@ -534,7 +525,7 @@ def test_set_description(mocked_adapter, triples):
     mocked_adapter.create_triple(desc_en)
     mocked_adapter.create_triple(desc_es)
     item_engine_calls = [
-        # create subject
+        #  create subject
         mock.call(new_item=True),
         # set description for item Q1
         mock.call('Q1'),
