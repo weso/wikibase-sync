@@ -41,7 +41,7 @@ cd wikibase-sync
 python setup.py install
 ```
 
-Python 3.6+ is recommended.
+Python 3.7+ is recommended.
 
 ## Examples
 With the following code you can synchronize the modification of two RDF files to a given Wikibase instance:
