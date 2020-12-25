@@ -7,10 +7,10 @@ from typing import List, Union
 from wikidataintegrator import wdi_core, wdi_login
 
 from . import TripleInfo, TripleStoreManager, ModificationResult, \
-              TripleElement, URIElement, AnonymousElement, LiteralElement
+    TripleElement, URIElement, AnonymousElement, LiteralElement
 from ..external.uri_factory_mock import URIFactory
 from ..util.uri_constants import RDFS_LABEL, RDFS_COMMENT, SCHEMA_NAME, \
-              SCHEMA_DESCRIPTION, SKOS_ALTLABEL, SKOS_PREFLABEL
+    SCHEMA_DESCRIPTION, SKOS_ALTLABEL, SKOS_PREFLABEL
 
 NonLiteralElement = Union[URIElement, AnonymousElement]
 
@@ -21,6 +21,10 @@ ERR_CODE_LANGUAGE = 'not-recognized-language'
 MAPPINGS_PROP_LABEL = "same as"
 MAPPINGS_PROP_DESC = "Mapping of an item to its original URI"
 MAX_CHARACTERS_DESC = 250
+
+# related link to the original URI
+RELATED_LINK_LABEL = "related link"
+RELATED_LINK_DESC = "Link or Mapping of an item to its original URI"
 
 
 class WikibaseAdapter(TripleStoreManager):
@@ -49,6 +53,8 @@ class WikibaseAdapter(TripleStoreManager):
         self._local_login = wdi_login.WDLogin(username, password, mediawiki_api_url)
         self._mappings_prop = self._get_or_create_mappings_prop()
         self._init_callbacks()
+        # added the related link to original URI
+        self._related_link_prop = self._get_or_create_related_link_prop()
 
     def batch_update(self, subject: TripleElement, triples: List[TripleInfo]) -> ModificationResult:
         """ Update a set of triples with a given subject in a single transaction
@@ -122,6 +128,17 @@ class WikibaseAdapter(TripleStoreManager):
         same_as = wdi_core.WDUrl(value=uri, prop_nr=self._mappings_prop)
         entity.update([same_as], append_value=[self._mappings_prop])
 
+    def _add_related_link_to_entity(self, entity: wdi_core.WDItemEngine, uri: str):
+        """
+        adds related link which is the original URI to the entity
+
+        :param entity: wikibase item
+        :param uri: item's URI
+        :return: update the item with the related link prop
+        """
+        rel_link = wdi_core.WDUrl(value=uri, prop_nr=self._related_link_prop)
+        entity.update([rel_link], append_value=[self._related_link_prop])
+
     def _create_new_wb_item(self, uriref: NonLiteralElement,
                             proptype: str) -> ModificationResult:
         entity = self._local_item_engine(new_item=True)
@@ -133,6 +150,9 @@ class WikibaseAdapter(TripleStoreManager):
 
         if not is_asio_uri(uriref):
             self._add_mappings_to_entity(entity, uriref.uri)
+
+        # adding related links
+        self._add_related_link_to_entity(entity, uriref.uri)
 
         return self._try_write(entity, entity_type=uriref.etype,
                                property_datatype=proptype)
@@ -147,11 +167,11 @@ class WikibaseAdapter(TripleStoreManager):
     def _get_or_create_mappings_prop(self):
         mappings_prop_id = None
         query_res = json.loads(requests.get(f"{self.api_url}?action=wbsearchentities" +
-            f"&search={MAPPINGS_PROP_LABEL}&format=json&language=en&type=property").text)
+                                            f"&search={MAPPINGS_PROP_LABEL}&format=json&language=en&type=property").text)
         if 'search' in query_res and len(query_res['search']) > 0:
             for search_result in query_res['search']:
                 if search_result['label'] == MAPPINGS_PROP_LABEL and \
-                   search_result['description'] == MAPPINGS_PROP_DESC:
+                        search_result['description'] == MAPPINGS_PROP_DESC:
                     mappings_prop_id = search_result['id']
                     logger.info("Mappings property has been found: %s", mappings_prop_id)
                     break
@@ -165,6 +185,28 @@ class WikibaseAdapter(TripleStoreManager):
                                                    property_datatype='url')
             logger.info("Mappings property has been created: %s", mappings_prop_id)
         return mappings_prop_id
+
+    def _get_or_create_related_link_prop(self):
+        rel_link_prop_id = None
+        query_res = json.loads(requests.get(f"{self.api_url}?action=wbsearchentities" +
+                                            f"&search={RELATED_LINK_LABEL}&format=json&language=en&type=property").text)
+        if 'search' in query_res and len(query_res['search']) > 0:
+            for search_result in query_res['search']:
+                if search_result['label'] == RELATED_LINK_LABEL and \
+                        search_result['description'] == RELATED_LINK_DESC:
+                    rel_link_prop_id = search_result['id']
+                    logger.error("Related Link property has been found: %s", rel_link_prop_id)
+                    break
+
+        if rel_link_prop_id is None:
+            logger.info("Related Link property was not found in the wikibase. Creating it...")
+            link_item = self._local_item_engine(new_item=True)
+            link_item.set_label(RELATED_LINK_LABEL, lang='en')
+            link_item.set_description(RELATED_LINK_DESC, lang='en')
+            rel_link_prop_id = link_item.write(self._local_login, entity_type='property',
+                                               property_datatype='url')
+            logger.info("Related Link property has been created: %s", rel_link_prop_id)
+        return rel_link_prop_id
 
     def _get_wb_id_of(self, uriref: NonLiteralElement, proptype: str):
         wb_uri = get_uri_for(uriref.uri)

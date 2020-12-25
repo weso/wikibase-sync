@@ -12,8 +12,8 @@ setup(
               'wbsync.triplestore', 'wbsync.util'],
     url='https://github.com/weso/rdf-wb-sync',
     license='MIT',
-    author='Alejandro González Hevia',
-    author_email='alejandrgh11@gmail.com',
+    author='Alejandro González Hevia, Othmane Bakhtaoui',
+    author_email='alejandrgh11@gmail.com, b.othmane98@live.fr',
     long_description=long_description,
     long_description_content_type='text/markdown',
     install_requires=[
