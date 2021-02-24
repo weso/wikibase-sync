@@ -268,7 +268,6 @@ def test_init(mock_get, mock_login, mock_item_engine):
     adapter = WikibaseAdapter(API_URL, SPARQL_URL, USER, PASS, URI_SET_FOR_SAMEAS)
     assert adapter.api_url == API_URL
     assert adapter.sparql_url == SPARQL_URL
-    assert adapter._set_uris_for_asio == URI_SET_FOR_SAMEAS
     mock_login.assert_has_calls([mock.call(USER, PASS, API_URL)])
     mock_item_engine.assert_has_calls([mock.call(API_URL, SPARQL_URL)])
 
@@ -329,7 +328,7 @@ def test_literal_datatype(mocked_adapter, triples):
     update_call = mock.call(data=[triple.object.to_wdi_datatype(prop_nr=triple.predicate.id)],
                             append_value=[triple.predicate.id])
     assert update_call in writer.update.mock_calls
-    assert writer.update.call_count == 5  # 2 mappings + delete statement + related link
+    assert writer.update.call_count == 3  # 2 mappings + delete statement + related link
 
 
 def test_modification_result_is_returned(mocked_adapter, triples):
@@ -371,7 +370,7 @@ def test_remove_triple(mocked_adapter, triples):
     writer = mocked_adapter._local_item_engine(None)
     update_call = mock.call(data=[wdi_core.WDBaseDataType.delete_statement('P3')])
     assert update_call in writer.update.mock_calls
-    assert writer.update.call_count == 7  # 3 mappings + delete statement
+    assert writer.update.call_count == 4  # 3 mappings + delete statement
 
 
 def test_remove_alias(mocked_adapter, triples):
@@ -553,15 +552,14 @@ def test_mappings_are_created_without_sameAs(mocked_adapter, triples):
     triple = triples['desc_en']
     _ = mocked_adapter.create_triple(triple)
     writer = mocked_adapter._local_item_engine(None)
-    print('hihi\n' + writer.get_label())
-    assert writer.update.call_count == 2
+    assert writer.update.call_count == 1
 
 
 def test_mappings_are_not_created_with_sameAs(mocked_adapter, triples):
     triple = triples['desc_asio']
     _ = mocked_adapter.create_triple(triple)
     writer = mocked_adapter._local_item_engine(None)
-    assert writer.update.call_count == 1
+    assert writer.update.call_count == 2
 
 
 def test_is_sameAs_mapping_activated(mocked_adapter, triples):
