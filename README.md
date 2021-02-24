@@ -11,8 +11,8 @@
 <tr>
   <td>Build Status</td>
   <td>
-    <a href="https://travis-ci.org/weso/wikibase-sync">
-    <img src="https://travis-ci.org/weso/wikibase-sync.svg?branch=master" alt="travis build status" />
+    <a href="https://travis-ci.com/weso/wikibase-sync">
+    <img src="https://travis-ci.com/weso/wikibase-sync.svg?branch=master" alt="travis build status" />
     </a>
   </td>
 </tr>
