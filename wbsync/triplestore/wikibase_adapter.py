@@ -26,6 +26,8 @@ MAX_CHARACTERS_DESC = 250
 RELATED_LINK_LABEL = "related link"
 RELATED_LINK_DESC = "Link or Mapping of an item to its original URI"
 
+URI_SET_FOR_SAMEAS = set()
+
 
 class WikibaseAdapter(TripleStoreManager):
     """ Adapter to execute operations on a wikibase instance.
@@ -45,7 +47,7 @@ class WikibaseAdapter(TripleStoreManager):
         Password of the account.
     """
 
-    def __init__(self, mediawiki_api_url, sparql_endpoint_url, username, password):
+    def __init__(self, mediawiki_api_url, sparql_endpoint_url, username, password, set_of_uris_for_asio=set()):
         self.api_url = mediawiki_api_url
         self.sparql_url = sparql_endpoint_url
         self._local_item_engine = wdi_core.WDItemEngine. \
@@ -55,6 +57,9 @@ class WikibaseAdapter(TripleStoreManager):
         self._init_callbacks()
         # added the related link to original URI
         self._related_link_prop = self._get_or_create_related_link_prop()
+        # for same As
+        global URI_SET_FOR_SAMEAS
+        URI_SET_FOR_SAMEAS = set_of_uris_for_asio
 
     def batch_update(self, subject: TripleElement, triples: List[TripleInfo]) -> ModificationResult:
         """ Update a set of triples with a given subject in a single transaction
@@ -148,7 +153,7 @@ class WikibaseAdapter(TripleStoreManager):
         else:
             entity.set_label(label)
 
-        if not is_asio_uri(uriref):
+        if is_same_as_activated(uriref, URI_SET_FOR_SAMEAS):
             self._add_mappings_to_entity(entity, uriref.uri)
 
         # adding related links
@@ -336,8 +341,8 @@ def get_lang_from_literal(objct):
     return objct.lang
 
 
-def is_asio_uri(uriref: NonLiteralElement) -> bool:
-    return '/hercules/asio' in uriref.uri
+def is_same_as_activated(uriref: NonLiteralElement, same_as_uris: set) -> bool:
+    return uriref.uri in same_as_uris
 
 
 def post_uri(label, uri):

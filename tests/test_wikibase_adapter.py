@@ -11,10 +11,13 @@ from wbsync.triplestore import URIElement, LiteralElement, ModificationResult, \
     TripleInfo, WikibaseAdapter, AnonymousElement
 from wbsync.triplestore.wikibase_adapter import DEFAULT_LANG, MAPPINGS_PROP_DESC, \
     RELATED_LINK_DESC, RELATED_LINK_LABEL, \
-    MAPPINGS_PROP_LABEL, is_asio_uri
+    MAPPINGS_PROP_LABEL, is_same_as_activated
+
 from wbsync.util.uri_constants import ASIO_BASE, GEO_BASE, RDFS_LABEL, RDFS_COMMENT, \
     SKOS_ALTLABEL, SCHEMA_NAME, SCHEMA_DESCRIPTION, \
     SKOS_PREFLABEL
+
+URI_SET_FOR_SAMEAS = {"https://example.org/hercules/asio#authors"}
 
 
 class FakeRequestsResponse():
@@ -262,17 +265,12 @@ def test_init(mock_get, mock_login, mock_item_engine):
     SPARQL_URL = 'https://hercules-demo.wiki.opencura.com/QueryService'
     USER = 'test'
     PASS = 'testPass123'
-    adapter = WikibaseAdapter(API_URL, SPARQL_URL, USER, PASS)
+    adapter = WikibaseAdapter(API_URL, SPARQL_URL, USER, PASS, URI_SET_FOR_SAMEAS)
     assert adapter.api_url == API_URL
     assert adapter.sparql_url == SPARQL_URL
+    assert adapter._set_uris_for_asio == URI_SET_FOR_SAMEAS
     mock_login.assert_has_calls([mock.call(USER, PASS, API_URL)])
     mock_item_engine.assert_has_calls([mock.call(API_URL, SPARQL_URL)])
-
-
-def test_is_asio_uri(triples):
-    assert is_asio_uri(triples['desc_asio'].subject)
-    assert not is_asio_uri(triples['desc_asio'].predicate)
-    assert not is_asio_uri(triples['desc_en'].subject)
 
 
 def test_label_no_lang_uses_default_lang(mocked_adapter, triples):
@@ -332,20 +330,6 @@ def test_literal_datatype(mocked_adapter, triples):
                             append_value=[triple.predicate.id])
     assert update_call in writer.update.mock_calls
     assert writer.update.call_count == 5  # 2 mappings + delete statement + related link
-
-
-def test_mappings_are_created_without_asio(mocked_adapter, triples):
-    triple = triples['desc_en']
-    _ = mocked_adapter.create_triple(triple)
-    writer = mocked_adapter._local_item_engine(None)
-    assert writer.update.call_count == 2
-
-
-def test_mappings_are_not_created_with_asio(mocked_adapter, triples):
-    triple = triples['desc_asio']
-    _ = mocked_adapter.create_triple(triple)
-    writer = mocked_adapter._local_item_engine(None)
-    assert writer.update.call_count == 1
 
 
 def test_modification_result_is_returned(mocked_adapter, triples):
@@ -563,6 +547,27 @@ def test_set_label(mocked_adapter, triples):
         mock.call('Jose Emilio Labra Gayo', 'en')
     ]
     writer.set_label.assert_has_calls(set_label_calls, any_order=False)
+
+
+def test_mappings_are_created_without_sameAs(mocked_adapter, triples):
+    triple = triples['desc_en']
+    _ = mocked_adapter.create_triple(triple)
+    writer = mocked_adapter._local_item_engine(None)
+    print('hihi\n' + writer.get_label())
+    assert writer.update.call_count == 2
+
+
+def test_mappings_are_not_created_with_sameAs(mocked_adapter, triples):
+    triple = triples['desc_asio']
+    _ = mocked_adapter.create_triple(triple)
+    writer = mocked_adapter._local_item_engine(None)
+    assert writer.update.call_count == 1
+
+
+def test_is_sameAs_mapping_activated(mocked_adapter, triples):
+    assert is_same_as_activated(triples['desc_asio'].subject, URI_SET_FOR_SAMEAS)
+    assert not is_same_as_activated(triples['desc_asio'].predicate, URI_SET_FOR_SAMEAS)
+    assert not is_same_as_activated(triples['desc_en'].subject, URI_SET_FOR_SAMEAS)
 
 
 def test_unknown_language(mocked_adapter, triples, caplog):
