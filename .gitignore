@@ -31,6 +31,7 @@ bsbmtools-0.2
 dist/
 
 uris.pkl
+wbsync/synchronization/populate.py
 
 wbsync.egg-info
 
