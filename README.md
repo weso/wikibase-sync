@@ -28,6 +28,8 @@
 
 Python library to synchronise data between RDF files and Wikibase instances.
 
+It updates your wikibase instance based on the changes of the RDF ontology.
+
 ## How to install
 You can install the library with pip:
 ```bash
