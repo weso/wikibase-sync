@@ -3,11 +3,11 @@ from unittest import mock
 import pytest
 from wikidataintegrator import wdi_core
 
-from wbsync.external.uri_factory import URIFactory
+from wbsync.external.uri_factory import URIFactoryMock
 from wbsync.triplestore import WikibaseAdapter
 
 
-FACTORY = URIFactory()
+FACTORY = URIFactoryMock()
 
 
 class IDGenerator():
