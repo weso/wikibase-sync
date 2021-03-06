@@ -6,7 +6,6 @@ from typing import List, Union
 
 from wikidataintegrator import wdi_core, wdi_login
 
-from uri_factory import URIFactoryMock
 from . import TripleInfo, TripleStoreManager, ModificationResult, \
     TripleElement, URIElement, AnonymousElement, LiteralElement
 from ..external.uri_factory import URIFactoryMock, URIFactory
