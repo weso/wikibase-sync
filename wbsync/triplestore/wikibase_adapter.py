@@ -27,6 +27,7 @@ RELATED_LINK_LABEL = "related link"
 RELATED_LINK_DESC = "Link or Mapping of an item to its original URI"
 
 URI_SET_FOR_SAMEAS = set()
+uris_factory = URIFactoryMock()
 
 
 class WikibaseAdapter(TripleStoreManager):
@@ -47,7 +48,8 @@ class WikibaseAdapter(TripleStoreManager):
         Password of the account.
     """
 
-    def __init__(self, mediawiki_api_url, sparql_endpoint_url, username, password, set_of_uris_for_asio=set(),uris_factory:URIFactory = URIFactoryMock()):
+    def __init__(self, mediawiki_api_url, sparql_endpoint_url, username, password, set_of_uris_for_asio=set(),
+                 factory_of_uris: URIFactory = URIFactoryMock()):
         self.api_url = mediawiki_api_url
         self.sparql_url = sparql_endpoint_url
         self._local_item_engine = wdi_core.WDItemEngine. \
@@ -61,7 +63,8 @@ class WikibaseAdapter(TripleStoreManager):
         global URI_SET_FOR_SAMEAS
         URI_SET_FOR_SAMEAS = set_of_uris_for_asio
         # Uris factory
-        self.uris_factory=uris_factory
+        global uris_factory
+        uris_factory = factory_of_uris
 
     def batch_update(self, subject: TripleElement, triples: List[TripleInfo]) -> ModificationResult:
         """ Update a set of triples with a given subject in a single transaction
@@ -216,7 +219,7 @@ class WikibaseAdapter(TripleStoreManager):
         return rel_link_prop_id
 
     def _get_wb_id_of(self, uriref: NonLiteralElement, proptype: str):
-        wb_uri = self.uris_factory.get_uri(uriref.uri)
+        wb_uri = uris_factory.get_uri(uriref.uri) #factory
         if wb_uri is not None:
             logging.debug("Id of %s in wikibase: %s", uriref, wb_uri)
             return wb_uri
@@ -226,7 +229,7 @@ class WikibaseAdapter(TripleStoreManager):
         entity_id = modification_result.result
 
         # update uri factory with new item
-        self.uris_factory.post_uri(uriref.uri,entity_id)
+        uris_factory.post_uri(uriref.uri, entity_id) #factory
         return entity_id
 
     def _init_callbacks(self):
@@ -328,8 +331,6 @@ class WikibaseAdapter(TripleStoreManager):
     def is_wb_label(cls, predicate: URIElement) -> bool:
         """ Returns whether the predicate corresponds to a label in wikibase. """
         return predicate in [RDFS_LABEL, SKOS_PREFLABEL, SCHEMA_NAME]
-
-
 
 
 def get_lang_from_literal(objct):
