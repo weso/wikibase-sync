@@ -78,6 +78,7 @@ class RemovalOperation(BasicSyncOperation):
         return self._triple_info == other._triple_info
 
 
+
 class BatchOperation(SyncOperation):
     """ Synchronization operation that performs a batch update on the triplestore
 

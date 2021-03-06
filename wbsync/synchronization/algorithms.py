@@ -49,6 +49,8 @@ class GraphDiffSyncAlgorithm(BaseSyncAlgorithm):
         target_g_iso = to_isomorphic(target_g)
         _, removals_graph, additions_graph = graph_diff(source_g_iso,
                                                         target_g_iso)
+
+
         additions_ops = self._create_add_ops_from(additions_graph)
         removals_ops = self._create_remove_ops_from(removals_graph)
         return removals_ops + additions_ops
@@ -57,9 +59,12 @@ class GraphDiffSyncAlgorithm(BaseSyncAlgorithm):
         return [AdditionOperation(*TripleInfo.from_rdflib(triple).content)
                 for triple in graph]
 
+
+
     def _create_remove_ops_from(self, graph: Graph) -> List[RemovalOperation]:
         return [RemovalOperation(*TripleInfo.from_rdflib(triple).content)
                 for triple in graph]
+
 
 
 class RDFSyncAlgorithm(BaseSyncAlgorithm):

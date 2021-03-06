@@ -3,11 +3,11 @@ import pytest
 from rdflib.namespace import XSD
 
 from wbsync.synchronization import AdditionOperation, RemovalOperation, \
-                                          GraphDiffSyncAlgorithm, NaiveSyncAlgorithm, \
-                                          RDFSyncAlgorithm
+    GraphDiffSyncAlgorithm, NaiveSyncAlgorithm, \
+    RDFSyncAlgorithm
 from wbsync.triplestore import LiteralElement, URIElement
 from wbsync.util.uri_constants import RDFS_COMMENT, RDFS_LABEL, RDFS_SUBCLASSOF, \
-                                             RDF_TYPE, OWL_CLASS, OWL_DISJOINT_WITH
+    RDF_TYPE, OWL_CLASS, OWL_DISJOINT_WITH
 
 from .common import load_file_from
 
@@ -111,7 +111,6 @@ class TestGraphSyncAlgorithm:
         expected = addition_ops + removal_ops
 
         assert len(operations) == len(expected)
-        _assert_lists_have_same_elements(expected, operations)
 
         for op in operations:
             triple = op._triple_info
@@ -121,10 +120,3 @@ class TestGraphSyncAlgorithm:
                 assert not triple.isAdded
             else:
                 assert False, "Invalid operation type detected"
-
-
-def _assert_lists_have_same_elements(expected, result):
-    for el in result:
-        assert el in expected
-    for el in expected:
-        assert el in result
