@@ -66,10 +66,6 @@ class GraphDiffSyncAlgorithm(BaseSyncAlgorithm):
                 for triple in graph]
 
 
-class AlgoritmoNuevo(BaseSyncAlgorithm):
-    def do_algorithm(self, source_content: str, target_content: str) -> List[SyncOperation]:
-        print("haciendo lo que sea")
-        return
 
 class RDFSyncAlgorithm(BaseSyncAlgorithm):
     """ Implementation of the RDFSync algorithm to synchronize ontology sources.
