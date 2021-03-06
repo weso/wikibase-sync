@@ -3,7 +3,7 @@ from unittest import mock
 import pytest
 from wikidataintegrator import wdi_core
 
-from wbsync.external.uri_factory_mock import URIFactory
+from wbsync.external.uri_factory import URIFactory
 from wbsync.triplestore import WikibaseAdapter
 
 
