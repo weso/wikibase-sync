@@ -8,7 +8,7 @@ from wikidataintegrator import wdi_core, wdi_login
 
 from . import TripleInfo, TripleStoreManager, ModificationResult, \
     TripleElement, URIElement, AnonymousElement, LiteralElement
-from ..external.uri_factory_mock import URIFactory
+from ..external.uri_factory import URIFactoryMock, URIFactory
 from ..util.uri_constants import RDFS_LABEL, RDFS_COMMENT, SCHEMA_NAME, \
     SCHEMA_DESCRIPTION, SKOS_ALTLABEL, SKOS_PREFLABEL
 
@@ -47,7 +47,7 @@ class WikibaseAdapter(TripleStoreManager):
         Password of the account.
     """
 
-    def __init__(self, mediawiki_api_url, sparql_endpoint_url, username, password, set_of_uris_for_asio=set()):
+    def __init__(self, mediawiki_api_url, sparql_endpoint_url, username, password, set_of_uris_for_asio=set(),uris_factory:URIFactory = URIFactoryMock()):
         self.api_url = mediawiki_api_url
         self.sparql_url = sparql_endpoint_url
         self._local_item_engine = wdi_core.WDItemEngine. \
@@ -60,6 +60,8 @@ class WikibaseAdapter(TripleStoreManager):
         # for same As
         global URI_SET_FOR_SAMEAS
         URI_SET_FOR_SAMEAS = set_of_uris_for_asio
+        # Uris factory
+        self.uris_factory=uris_factory
 
     def batch_update(self, subject: TripleElement, triples: List[TripleInfo]) -> ModificationResult:
         """ Update a set of triples with a given subject in a single transaction
@@ -214,7 +216,7 @@ class WikibaseAdapter(TripleStoreManager):
         return rel_link_prop_id
 
     def _get_wb_id_of(self, uriref: NonLiteralElement, proptype: str):
-        wb_uri = get_uri_for(uriref.uri)
+        wb_uri = self.uris_factory.get_uri(uriref.uri)
         if wb_uri is not None:
             logging.debug("Id of %s in wikibase: %s", uriref, wb_uri)
             return wb_uri
@@ -224,7 +226,7 @@ class WikibaseAdapter(TripleStoreManager):
         entity_id = modification_result.result
 
         # update uri factory with new item
-        post_uri(uriref.uri, entity_id)
+        self.uris_factory.post_uri(uriref.uri,entity_id)
         return entity_id
 
     def _init_callbacks(self):
@@ -328,9 +330,6 @@ class WikibaseAdapter(TripleStoreManager):
         return predicate in [RDFS_LABEL, SKOS_PREFLABEL, SCHEMA_NAME]
 
 
-def get_uri_for(label):
-    uri_factory = URIFactory()
-    return uri_factory.get_uri(label)
 
 
 def get_lang_from_literal(objct):
@@ -343,12 +342,6 @@ def get_lang_from_literal(objct):
 
 def is_same_as_activated(uriref: NonLiteralElement, same_as_uris: set) -> bool:
     return uriref.uri in same_as_uris
-
-
-def post_uri(label, uri):
-    logging.debug("Calling POST of URIFactory: %s - %s", label, uri)
-    uri_factory = URIFactory()
-    return uri_factory.post_uri(label, uri)
 
 
 def try_infer_label_from(uriref: NonLiteralElement):
