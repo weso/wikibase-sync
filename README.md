@@ -31,12 +31,7 @@ Python library to synchronise data between RDF files and Wikibase instances.
 It updates your wikibase instance based on the changes of the RDF ontology.
 
 ## How to install
-You can install the library with pip:
-```bash
-pip install wbsync
-```
-
-Or, alternatively, you can install it manually from the source code:
+You can install it manually from the source code:
 ```bash
 git clone https://github.com/weso/wikibase-sync
 cd wikibase-sync
