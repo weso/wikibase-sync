@@ -3,17 +3,14 @@
 import pickle
 import os
 from abc import ABC, abstractmethod
-from typing import Union
-from ..triplestore import URIElement, AnonymousElement
 
 URIS_FILE = os.path.join(os.getcwd(), 'uris.pkl')
-NonLiteralElement = Union[URIElement, AnonymousElement]
 
 class URIFactory(ABC):
 
     @abstractmethod
-    def get_uri(self, uriRef:NonLiteralElement) -> str:
-        """ Gets the uri for a label.
+    def get_uri(self, uriRef) -> str:
+        """ Gets the uri for a NonLiteralElement.
 
        Parameters
        ----------
@@ -27,8 +24,8 @@ class URIFactory(ABC):
        """
 
     @abstractmethod
-    def post_uri(self, uriRef:NonLiteralElement, wb_uri) -> None:
-        """ Posts the uri for a label.
+    def post_uri(self, uriRef, wb_uri) -> None:
+        """ Posts the uri for a NonLiteralElement.
 
           Parameters
           ----------
@@ -59,11 +56,11 @@ class URIFactoryMock(URIFactory):
             URIFactoryMock.instance = URIFactoryMock.__URIFactoryMock()
 
 
-    def get_uri(self, uriRef:NonLiteralElement):
+    def get_uri(self, uriRef):
         return URIFactoryMock.instance.state[uriRef.uri] \
             if uriRef.uri in URIFactoryMock.instance.state else None
 
-    def post_uri(self, uriRef:NonLiteralElement, wb_uri):
+    def post_uri(self, uriRef, wb_uri):
         URIFactoryMock.instance.state[uriRef.uri] = wb_uri
         with open(URIS_FILE, 'wb') as f:
             pickle.dump(URIFactoryMock.instance.state, f)
