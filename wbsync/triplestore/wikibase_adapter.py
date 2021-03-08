@@ -219,7 +219,7 @@ class WikibaseAdapter(TripleStoreManager):
         return rel_link_prop_id
 
     def _get_wb_id_of(self, uriref: NonLiteralElement, proptype: str):
-        wb_uri = uris_factory.get_uri(uriref.uri) #factory
+        wb_uri = uris_factory.get_uri(uriref) #factory
         if wb_uri is not None:
             logging.debug("Id of %s in wikibase: %s", uriref, wb_uri)
             return wb_uri
@@ -229,7 +229,7 @@ class WikibaseAdapter(TripleStoreManager):
         entity_id = modification_result.result
 
         # update uri factory with new item
-        uris_factory.post_uri(uriref.uri, entity_id) #factory
+        uris_factory.post_uri(uriref, entity_id) #factory
         return entity_id
 
     def _init_callbacks(self):
