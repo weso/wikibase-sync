@@ -46,5 +46,4 @@ def mocked_adapter(id_generator):
         adapter._local_login = mock.MagicMock()
         adapter._mappings_prop = mock.MagicMock()
         adapter._related_link_prop = mock.MagicMock()
-        adapter._uris_factory = mock.MagicMock()
         yield adapter
