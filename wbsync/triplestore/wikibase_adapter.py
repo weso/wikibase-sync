@@ -29,7 +29,6 @@ RELATED_LINK_DESC = "Link or Mapping of an item to its original URI"
 URI_SET_FOR_SAMEAS = set()
 uris_factory = URIFactoryMock()
 
-
 class WikibaseAdapter(TripleStoreManager):
     """ Adapter to execute operations on a wikibase instance.
 
@@ -63,7 +62,6 @@ class WikibaseAdapter(TripleStoreManager):
         global URI_SET_FOR_SAMEAS
         URI_SET_FOR_SAMEAS = set_of_uris_for_asio
         # Uris factory
-        global uris_factory
         uris_factory = factory_of_uris
 
     def batch_update(self, subject: TripleElement, triples: List[TripleInfo]) -> ModificationResult:

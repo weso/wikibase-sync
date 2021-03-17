@@ -23,3 +23,4 @@ urllib3==1.25.8
 Werkzeug==0.16.1
 wikidataintegrator==0.6.0
 wrapt==1.11.2
+pytest
