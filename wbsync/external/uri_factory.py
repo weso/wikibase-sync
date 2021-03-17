@@ -9,30 +9,30 @@ URIS_FILE = os.path.join(os.getcwd(), 'uris.pkl')
 class URIFactory(ABC):
 
     @abstractmethod
-    def get_uri(self, label) -> str:
-        """ Gets the uri for a label.
+    def get_uri(self, uriRef) -> str:
+        """ Gets the uri for a NonLiteralElement.
 
        Parameters
        ----------
-       str: label
-           Label to find a uri.
+       NonLiteralElement: uriRef
+           NonLiteralElement to find a uri.
 
        Returns
        -------
        :str: uri
-           Uri that corresponds to the label
+           Uri that corresponds to the NonLiteralElement
        """
 
     @abstractmethod
-    def post_uri(self, label, wb_uri) -> None:
-        """ Posts the uri for a label.
+    def post_uri(self, uriRef, wb_uri) -> None:
+        """ Posts the uri for a NonLiteralElement.
 
           Parameters
           ----------
-          str: label
-              Label that corresponds to the new uri.
+          NonLiteralElement: uriRef
+              NonLiteralElement that corresponds to the new uri.
 
-          wb_uri: label
+          wb_uri: str
               Uri for the label .
           """
 
@@ -56,12 +56,12 @@ class URIFactoryMock(URIFactory):
             URIFactoryMock.instance = URIFactoryMock.__URIFactoryMock()
 
 
-    def get_uri(self, label):
-        return URIFactoryMock.instance.state[label] \
-            if label in URIFactoryMock.instance.state else None
+    def get_uri(self, uriRef):
+        return URIFactoryMock.instance.state[uriRef.uri] \
+            if uriRef.uri in URIFactoryMock.instance.state else None
 
-    def post_uri(self, label, wb_uri):
-        URIFactoryMock.instance.state[label] = wb_uri
+    def post_uri(self, uriRef, wb_uri):
+        URIFactoryMock.instance.state[uriRef.uri] = wb_uri
         with open(URIS_FILE, 'wb') as f:
             pickle.dump(URIFactoryMock.instance.state, f)
 
