@@ -6,7 +6,6 @@ from wikidataintegrator import wdi_core
 from wbsync.external.uri_factory import URIFactoryMock
 from wbsync.triplestore import WikibaseAdapter
 
-
 FACTORY = URIFactoryMock()
 
 
@@ -22,6 +21,7 @@ class IDGenerator():
             return 'Q' + str_id if etype == 'item' else 'P' + str_id
         except KeyError:
             pass
+
 
 @pytest.fixture()
 def id_generator():
@@ -46,4 +46,6 @@ def mocked_adapter(id_generator):
         adapter._local_login = mock.MagicMock()
         adapter._mappings_prop = mock.MagicMock()
         adapter._related_link_prop = mock.MagicMock()
+        adapter._uri_set_for_sameas = set()
+        adapter._uris_factory = URIFactoryMock()
         yield adapter

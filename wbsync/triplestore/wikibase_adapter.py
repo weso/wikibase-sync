@@ -26,10 +26,6 @@ MAX_CHARACTERS_DESC = 250
 RELATED_LINK_LABEL = "related link"
 RELATED_LINK_DESC = "Link or Mapping of an item to its original URI"
 
-URI_SET_FOR_SAMEAS = set()
-uris_factory = URIFactoryMock()
-
-
 class WikibaseAdapter(TripleStoreManager):
     """ Adapter to execute operations on a wikibase instance.
 
@@ -60,11 +56,9 @@ class WikibaseAdapter(TripleStoreManager):
         # added the related link to original URI
         self._related_link_prop = self._get_or_create_related_link_prop()
         # for same As
-        global URI_SET_FOR_SAMEAS
-        URI_SET_FOR_SAMEAS = set_of_uris_for_asio
+        self._uri_set_for_sameas = set_of_uris_for_asio
         # Uris factory
-        global uris_factory
-        uris_factory = factory_of_uris
+        self._uris_factory = factory_of_uris
 
     def batch_update(self, subject: TripleElement, triples: List[TripleInfo]) -> ModificationResult:
         """ Update a set of triples with a given subject in a single transaction
@@ -158,7 +152,7 @@ class WikibaseAdapter(TripleStoreManager):
         else:
             entity.set_label(label)
 
-        if is_same_as_activated(uriref, URI_SET_FOR_SAMEAS):
+        if is_same_as_activated(uriref, self._uri_set_for_sameas):
             self._add_mappings_to_entity(entity, uriref.uri)
 
         # adding related links
@@ -219,7 +213,7 @@ class WikibaseAdapter(TripleStoreManager):
         return rel_link_prop_id
 
     def _get_wb_id_of(self, uriref: NonLiteralElement, proptype: str):
-        wb_uri = uris_factory.get_uri(uriref) #factory
+        wb_uri = self._uris_factory.get_uri(uriref) #factory
         if wb_uri is not None:
             logging.debug("Id of %s in wikibase: %s", uriref, wb_uri)
             return wb_uri
@@ -229,7 +223,7 @@ class WikibaseAdapter(TripleStoreManager):
         entity_id = modification_result.result
 
         # update uri factory with new item
-        uris_factory.post_uri(uriref, entity_id) #factory
+        self._uris_factory.post_uri(uriref, entity_id) #factory
         return entity_id
 
     def _init_callbacks(self):

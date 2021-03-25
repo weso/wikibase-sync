@@ -559,7 +559,7 @@ def test_mappings_are_not_created_with_sameAs(mocked_adapter, triples):
     triple = triples['desc_asio']
     _ = mocked_adapter.create_triple(triple)
     writer = mocked_adapter._local_item_engine(None)
-    assert writer.update.call_count == 2
+    assert writer.update.call_count == 1
 
 
 def test_is_sameAs_mapping_activated(mocked_adapter, triples):
