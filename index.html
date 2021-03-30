@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Wikibase-sync</title>
+  <link rel="icon"  type="image/png" href="images/weso_logo.png">
+
+
+  <link href="doc.min.css" rel="stylesheet" type="text/css" />
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  </head>
+  <body>
+
+  <a href="https://github.com/weso/wikibase-sync" target="_blank"><img style="z-index: 1; position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png" alt="Fork me on GitHub"></a>
+   <!-- Fixed navbar -->
+    <div class="navbar navbar-inverse" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="#">Wikibase-sync</a>
+        </div>
+        <div class="navbar-collapse collapse">
+          <ul class="nav navbar-nav">
+            <li><a target="_blank" href="http://www.weso.es/">WESO</a></li>
+          </ul>
+        </div><!--/.nav-collapse -->
+      </div>
+    </div>
+
+
+     <div class="container" role="main">
+      	<div class="row" id="aboutYQuery">
+      	    <div class="col-md-12">
+                <h1>Welcome to Wikibase-sync</h1>
+                <p>Wikibase-sync is a python library to synchronise data between RDF files and <a target="_blank" href="https://wikiba.se/">Wikibase</a> instances.</p>
+                <h2>System Scope and Context</h2>
+                <p>Domain experts have the domain knowledge necessary to contribute to some of the domain-specific ontologies that they are used to work in. However, not all of them have the necessary expertise in the technologies surrounding the RDF ecosystem (OWL, SPARQL, the different syntaxes...).</p>
+                <p>Wikibase is the powerful, flexible and customizable knowledge base software that drives Wikidata. With MediaWiki as its front end and a rich JavaScript interface for data management, Wikibase makes collaboration easy for humans and machines alike, and its data model prioritizes language independence and knowledge diversity.</p>
+                <p>Wikibase's robust data export options include JSON, RDF/XML, N3, YAML and more — and it provides a powerful query interface using SPARQL for both local and federated queries (with updates on changes), extending the potential data available from a single node to thousands.</p>
+                <p>With Wikibase we can bridge the gap between Ontology engineers who work directly on the ontology files, and other domain experts that can contribute directly to the ontology through the Wikibase interface but don't have the necessary knowledge to modify the files directly.</p>
+                <p>However, we still need to reflect the changes that occur in the wikibase or ontology to their counterpart. This is when the need to create a system that can propagate changes of an ontology to a triple store appears.</p>
+                <p>This system need not be just fixed to work with Wikibase (and its triplestore, Blazegraph). The idea is to provide a system that could work with different triplestores where the ontology would be synchronized.</p>
+                <h2>Solution Strategy</h2>
+                <p>The solution to the problem stated above is the creation of a REST API which will be in charge of propagating these changes. There are two possible types of propagations that can occur:</p>
+                <ul>
+                  <li>A change happens to the ontology files. This change must be propagated to the triple store where the ontology is stored.</li>
+                  <li>A change occurs in the triple store. This change must be propagated to the ontology files through the version control system.</li>
+                </ul>
+                <p>Once a new release is created in the version control system, a REST endpoint provided by hercules_sync will be automatically called through the use of <a target="_blank" href="https://developer.github.com/webhooks/">GitHub webhooks</a>. In this request the diff will be sent and propagated to the underlying triple store.</p>
+
+             
+
+                <h2>Deployment View</h2>
+                <p>The following image describes the deployment view of the system. The following elements have been identified:</p>
+                <ul>
+                  <li><strong>Webhook (GitHub):</strong> This corresponds to the webhook system that is automatically managed by GitHub. This system runs on an external machine and will call the synchronization system through the 5000/tcp port.</li>
+                  <li><strong>ontology_synchronizer:  </strong>This system will be deployed in a production machine using a docker container, it will receive requests from the webhook with the changes from the ontology files. It will also communicate with wikibase to propagate the modifications from the ontology and with an external system, the URIS factory, to store and retrieve the Wikibase URIs of the entities that will be updated.</li>
+                  <li><strong>wikibase: </strong>This component includes all of the containers available in the wikibase-docker repository which form part of a Wikibase instance.</li>
+                  <li><strong>uris_factory:</strong>External system that is in charge of managing the URIs associated to each element of the ontology.</li>
+                </ul>
+                <div class="bbview"><img src="./images/herc_sync_deployment_view.png"></img></div>
+
+            </div>
+        </div>
+        
+        <div class="footer">
+          <img src="./images/weso_logo.png" ></img>
+        </div>
+     </div>
+    </div>
+
+  
+</body>
+</html>
