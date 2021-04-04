@@ -16,3 +16,7 @@ coverage:
       default:
         target: auto
         threshold: 5%
+
+ignore:
+  - "*/githubcon/github_connection.py"
+

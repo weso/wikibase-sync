@@ -1,0 +1,13 @@
+@prefix ex:   <http://www.purl.org/hercules/asio/core#> .
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+
+
+ex:country
+    rdf:type   owl:Class ;
+    rdfs:comment
+               "This property indicates the nationality of a resource. The domain is not set so unpredicted resources within the ontology could be attached to countries."@en ;
+    rdfs:label "country"@en .

@@ -9,6 +9,8 @@ install:
 script:
   # run tests
   - py.test --cov-report=xml --cov=wbsync
+  - py.test --cov-report=xml --cov=rdfsync
 
 after_success:
   - codecov
+
