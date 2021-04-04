@@ -11,3 +11,13 @@ the algorithms for synchronizing your RDF ontology from the changes made in wiki
 
 ## wbsync
 the algorithms for synchronizing your wikibase instance from the changes made in an RDF ontology.
+
+## How to install
+You can install it manually from the source code:
+```bash
+git clone https://github.com/weso/wikibase-sync
+cd wikibase-sync
+python setup.py install
+```
+
+Python 3.7+ is required.

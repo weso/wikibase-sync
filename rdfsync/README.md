@@ -4,18 +4,6 @@ An algorithm to synchronise data between the ontology files and a given Wikibase
 
 It updates an ontology file from the changes made in your Wikibase instance.
 
-## How to install
-
-You can install it manually from the source code:
-
-```bash
-git clone https://github.com/weso/rdfsync
-cd rdfsync
-python setup.py install
-```
-
-Python 3.7+ is required.
-
 ## How to synchronize
 
 With the following code you can synchronize the modification of your ontology or rdf file with the updated given
