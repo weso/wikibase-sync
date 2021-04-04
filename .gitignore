@@ -5,6 +5,11 @@ __pycache__/
 *.py[cod]
 .idea/
 
+rdfsync/secret.py
+rdfsync/synchronization.py
+rdfsync/synchronization2.py
+tests/test_github_connection.py
+rdfsync/wb2rdf/ex.ttl
 
 .pytest_cache/
 

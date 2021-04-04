@@ -1,30 +1,4 @@
 # wikibase-sync
-<table>
-<tr>
-  <td>License</td>
-  <td>
-    <a href="https://github.com/weso/wikibase-sync/blob/master/LICENSE">
-    <img src="https://img.shields.io/github/license/weso/wikibase-sync" alt="license" />
-    </a>
-</td>
-</tr>
-<tr>
-  <td>Build Status</td>
-  <td>
-    <a href="https://travis-ci.com/weso/wikibase-sync">
-    <img src="https://travis-ci.com/weso/wikibase-sync.svg?branch=master" alt="travis build status" />
-    </a>
-  </td>
-</tr>
-<tr>
-  <td>Coverage</td>
-  <td>
-    <a href="https://codecov.io/gh/weso/wikibase-sync">
-    <img src="https://codecov.io/gh/weso/wikibase-sync/branch/master/graph/badge.svg" alt="coverage" />
-    </a>
-  </td>
-</tr>
-</table>
 
 Python library to synchronise data between RDF files and Wikibase instances.
 
