@@ -3,7 +3,7 @@ from rdfsync.wb2rdf.conversion import Converter
 
 converter = Converter(endpoint='', input_format='ttl')
 
-MEDIAWIKI_API_URL = "https://rdfsync-test.wiki.opencura.com/w/api.php"
+MEDIAWIKI_API_URL = "https://wikibase-sync-test.wikibase.cloud/w/api.php"
 DATA_DIR = os.path.join(os.path.dirname(__file__), 'data', 'synchronization')
 
 def load_file_from(source, target):
